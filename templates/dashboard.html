@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Модальное окно добавления карточки -->
+<div id="card-modal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h3>Новая карточка</h3>
+    <input type="text" id="card-text-input" placeholder="Введите текст..." class="form-control" />
+    <button id="save-card-btn" class="btn btn-success mt-2">Сохранить</button>
+  </div>
+</div>
+
+<!-- Основной контейнер -->
+<div class="dashboard-container">
+    <h1>Канбан-доска</h1>
+
+    <button id="show-kanban-btn" class="btn btn-primary mb-3">Показать канбан-доску</button>
+
+    <!-- Общий контейнер для доски и кнопки добавления -->
+    <div class="kanban-container" style="display: none;">
+        <div class="kanban-board">
+            <div class="kanban-column" data-column="To Do">
+                <h3>To Do</h3>
+                <div class="cards-container"></div>
+            </div>
+            <div class="kanban-column" data-column="In Progress">
+                <h3>In Progress</h3>
+                <div class="cards-container"></div>
+            </div>
+            <div class="kanban-column" data-column="Done">
+                <h3>Done</h3>
+                <div class="cards-container"></div>
+            </div>
+        </div>
+
+        <div class="text-center mt-3">
+            <button id="add-card-btn" class="btn btn-primary">+ Добавить карточку</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Подключение зависимостей -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+
+<!-- Подключение вашего скрипта -->
+<script src="{{ url_for('static', filename='js/kanban.js') }}"></script>
+
+{% endblock %}

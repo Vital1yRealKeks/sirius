@@ -1,0 +1,36 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="main-container">
+    <!-- Левая часть с изображением -->
+    <div class="image-container">
+        <img src="{{ url_for('static', filename='image.jpg') }}" alt="Login Image">
+    </div>
+
+    <!-- Правая часть с формой входа -->
+    <div class="form-container">
+        <div class="welcome-container">
+            <h1 class="welcome-text">Добро пожаловать!</h1>
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="text" class="form-label">Логин</label>
+                    <input type="text" id="username" name="username" class="custom-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Пароль</label>
+                    <input type="password" id="password" name="password" class="custom-input" required>
+                </div>
+
+                <button type="submit" class="custom-btn">Войти</button>
+            </form>
+
+            <div class="register-link">
+                <p>Еще не зарегистрированы? <a href="{{ url_for('register') }}">Создайте аккаунт</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
