@@ -5,31 +5,36 @@ $(document).ready(function () {
     function initKanbanBoard() {
         // Обработчик кнопки показа/скрытия доски
         $('#show-kanban-btn').click(function() {
+            $('.list-container').hide();
             $('.kanban-container').toggle();
-            $(this).text(function(i, text) {
-                return text === "Показать канбан-доску" ? "Скрыть канбан-доску" : "Показать канбан-доску";
-            });
-
+            
+            // Обновляем активный класс кнопок
+            $('#show-kanban-btn').addClass('btn-primary').removeClass('btn-secondary');
+            $('#show-list-btn').addClass('btn-secondary').removeClass('btn-primary');
+            
             // Если доска показывается впервые - загружаем карточки
             if ($('.kanban-container').is(':visible') && $('.kanban-card').length === 0) {
                 loadCards();
             }
         });
-
-        // Остальной код остаётся без изменений...
-        loadCards();
-
-        $('#add-card-btn').click(function (e) {
-            e.stopPropagation();
-            showCardModal();
+        
+        // Обработчик кнопки показа/скрытия списка задач
+        $('#show-list-btn').click(function() {
+            $('.kanban-container').hide();
+            $('.list-container').toggle();
+            
+            // Обновляем активный класс кнопок
+            $('#show-list-btn').addClass('btn-primary').removeClass('btn-secondary');
+            $('#show-kanban-btn').addClass('btn-secondary').removeClass('btn-primary');
+            
+            // Если список показывается впервые - загружаем задачи
+            if ($('.list-container').is(':visible') && $('.task-list-item').length === 0) {
+                loadCards();
+            }
         });
 
-
-        // Остальной ваш код...
-        loadCards();
-
         // Обработчик кнопки "Добавить карточку"
-        $('#add-card-btn').click(function (e) {
+        $('#add-card-btn, #add-list-task-btn').click(function (e) {
             e.stopPropagation();
             showCardModal();
         });
@@ -88,8 +93,16 @@ $(document).ready(function () {
                     throw new Error('Invalid data format');
                 }
 
+                // Очищаем контейнеры карточек и списка задач
                 $('.cards-container').empty();
-                data.cards.forEach(card => addCardToDOM(card));
+                $('.task-list-items').empty();
+                
+                // Добавляем карточки в DOM
+                data.cards.forEach(card => {
+                    addCardToDOM(card);
+                    addCardToListView(card);
+                });
+                
                 initSortable(); // Инициализируем после добавления
             })
             .fail(function (xhr) {
@@ -97,7 +110,7 @@ $(document).ready(function () {
             });
     }
 
-    // Добавление карточки в DOM
+    // Добавление карточки в DOM (канбан-доска)
     function addCardToDOM(card) {
         const cardHtml = `
             <div class="kanban-card" data-card-id="${card.id}">
@@ -111,10 +124,72 @@ $(document).ready(function () {
         $(`[data-column="${card.column}"] .cards-container`).append(cardHtml);
         $(`.kanban-card[data-card-id="${card.id}"] .btn-delete`).click(deleteCardHandler);
     }
+    
+    // Добавление карточки в представление списка
+    function addCardToListView(card) {
+        const listItemHtml = `
+            <div class="task-list-item" data-card-id="${card.id}">
+                <div class="task-text">${card.text}</div>
+                <div class="task-actions">
+                    <span class="task-column">${card.column}</span>
+                    <button class="btn-move" data-card-id="${card.id}">↔</button>
+                    <button class="btn-delete" data-card-id="${card.id}">×</button>
+                </div>
+            </div>
+        `;
+
+        $(`[data-column="${card.column}"] .task-list-items`).append(listItemHtml);
+        
+        // Добавляем обработчики событий
+        $(`.task-list-item[data-card-id="${card.id}"] .btn-delete`).click(deleteCardHandler);
+        $(`.task-list-item[data-card-id="${card.id}"] .btn-move`).click(showMoveCardDialog);
+    }
+    
+    // Показать диалог перемещения карточки
+    function showMoveCardDialog() {
+        const cardId = $(this).data('card-id');
+        const currentColumn = $(this).closest('.task-list-column').data('column');
+        
+        // Создаем список доступных колонок для перемещения
+        const columns = ['To Do', 'In Progress', 'Done'];
+        let moveOptions = '';
+        
+        columns.forEach(column => {
+            if (column !== currentColumn) {
+                moveOptions += `<button class="move-to-column" data-target="${column}" data-card-id="${cardId}">${column}</button>`;
+            }
+        });
+        
+        // Показываем диалог с опциями
+        const moveDialog = $(`
+            <div class="move-dialog">
+                <div class="move-dialog-content">
+                    <h4>Переместить в:</h4>
+                    ${moveOptions}
+                    <button class="cancel-move">Отмена</button>
+                </div>
+            </div>
+        `);
+        
+        $('body').append(moveDialog);
+        
+        // Обработчики для кнопок перемещения
+        $('.move-to-column').click(function() {
+            const targetColumn = $(this).data('target');
+            const cardId = $(this).data('card-id');
+            updateCardPosition(cardId, targetColumn);
+            $('.move-dialog').remove();
+        });
+        
+        // Обработчик для кнопки отмены
+        $('.cancel-move').click(function() {
+            $('.move-dialog').remove();
+        });
+    }
 
     // Удаление карточки
     function deleteCardHandler() {
-        const cardId = $(this).closest('.kanban-card').data('card-id');
+        const cardId = $(this).closest('.kanban-card, .task-list-item').data('card-id');
         deleteCard(cardId);
     }
 
@@ -125,6 +200,7 @@ $(document).ready(function () {
                 type: 'DELETE',
                 success: function () {
                     $(`.kanban-card[data-card-id="${cardId}"]`).remove();
+                    $(`.task-list-item[data-card-id="${cardId}"]`).remove();
                 },
                 error: function (xhr) {
                     showAjaxError(xhr, 'удалении карточки');
@@ -156,6 +232,17 @@ $(document).ready(function () {
             method: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({ column: newColumn }),
+            success: function() {
+                // Обновляем представление списка
+                const taskItem = $(`.task-list-item[data-card-id="${cardId}"]`);
+                if (taskItem.length) {
+                    // Обновляем метку колонки
+                    taskItem.find('.task-column').text(newColumn);
+                    
+                    // Перемещаем элемент в соответствующую колонку в списке
+                    taskItem.detach().appendTo(`.task-list-column[data-column="${newColumn}"] .task-list-items`);
+                }
+            },
             error: function (xhr) {
                 showAjaxError(xhr, 'перемещении карточки');
                 loadCards(); // восстановление в случае ошибки
@@ -169,4 +256,49 @@ $(document).ready(function () {
         console.error(`Ошибка при ${action}:`, errorMessage);
         alert(`Ошибка при ${action}: ${errorMessage}`);
     }
+    
+    // Добавляем стили для диалога перемещения
+    $('<style>')
+        .text(`
+            .move-dialog {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1100;
+            }
+            .move-dialog-content {
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                min-width: 200px;
+            }
+            .move-dialog-content h4 {
+                margin-top: 0;
+                margin-bottom: 10px;
+            }
+            .move-dialog-content button {
+                padding: 8px;
+                cursor: pointer;
+                border: none;
+                border-radius: 4px;
+            }
+            .move-to-column {
+                background: #007bff;
+                color: white;
+            }
+            .cancel-move {
+                background: #f5f5f5;
+                margin-top: 10px;
+            }
+        `)
+        .appendTo('head');
 });
