@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
-
 {% block content %}
-
 <!-- Модальное окно добавления карточки -->
 <div id="card-modal" class="modal" style="display: none;">
   <div class="modal-content">
@@ -11,12 +9,14 @@
     <button id="save-card-btn" class="btn btn-success mt-2">Сохранить</button>
   </div>
 </div>
-
 <!-- Основной контейнер -->
 <div class="dashboard-container">
-    <h1>Канбан-доска</h1>
-
-    <button id="show-kanban-btn" class="btn btn-primary mb-3">Показать канбан-доску</button>
+    <h1>Добро пожаловать, {{ username }}</h1>
+    <!-- Кнопки переключения видов - модифицировано для выравнивания по левому краю -->
+    <div class="view-toggle-buttons" style="margin-top: 20px; display: flex; justify-content: flex-start; gap: 25px; margin-bottom: 2.5rem;">
+    <button id="show-kanban-btn" class="btn btn-secondary">Показать канбан-доску</button>
+    <button id="show-list-btn" class="btn btn-primary">Показать список задач</button>
+    </div>
 
     <!-- Общий контейнер для доски и кнопки добавления -->
     <div class="kanban-container" style="display: none;">
@@ -34,18 +34,24 @@
                 <div class="cards-container"></div>
             </div>
         </div>
-
         <div class="text-center mt-3">
             <button id="add-card-btn" class="btn btn-primary">+ Добавить карточку</button>
         </div>
     </div>
+    <!-- Контейнер для списка задач (отображается по умолчанию) -->
+    <div class="list-container">
+        <h2 style="margin-left: 20px; margin-bottom: 0.5rem;">Задачи:</h2>
+        <div class="task-list">
+            <div class="task-list-items"></div>
+        </div>
+        <div class="text-center mt-3">
+            <button id="add-list-item-btn" class="btn btn-primary">+ Добавить задачу</button>
+        </div>
+    </div>
 </div>
-
-
 <!-- Подключение зависимостей -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
-
 <!-- Подключение вашего скрипта -->
 <script src="{{ url_for('static', filename='js/kanban.js') }}"></script>
 

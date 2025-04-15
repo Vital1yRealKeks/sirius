@@ -192,6 +192,7 @@ label.form-label {
 
 .kanban-card .card-text {
     margin-right: 25px;
+    font-size: 22px;
 }
 
 .kanban-card .btn-delete {
@@ -288,14 +289,12 @@ label.form-label {
     padding: 20px;
     width: 100%; /* Обеспечиваем, чтобы доска занимала всю ширину */
 }
-
 /* Контейнер для колонок */
 .kanban-columns-container {
     display: flex;
     gap: 20px;
     width: 100%; /* Заставляем контейнер колонок растягиваться на всю ширину */
 }
-
 /* Колонки */
 .kanban-column {
     flex-grow: 1; /* Колонки будут растягиваться на доступную ширину */
@@ -304,14 +303,12 @@ label.form-label {
     padding: 15px;
     border-radius: 5px;
 }
-
 /* Контейнер для кнопки добавления карточки */
 .add-card-btn-container {
     text-align: center;
     margin-top: 20px;
     width: 100%; /* Контейнер кнопки растягивается по всей ширине */
 }
-
 /* Кнопка добавления карточки */
 #add-card-btn {
     padding: 8px 20px;
@@ -322,8 +319,143 @@ label.form-label {
     cursor: pointer;
     transition: background-color 0.3s;
 }
-
 /* Hover для кнопки */
 #add-card-btn:hover {
     background: #45a049;
+}
+/* Стили для кнопок переключения видов */
+.view-toggle-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+/* Стили для списка задач */
+.task-list {
+    padding: 20px;
+}
+.task-list-items {
+    margin-top: 10px;
+}
+.task-list-item {
+    background: white;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.task-list-item .task-text {
+    flex-grow: 1;
+    font-size: 22px;
+}
+.task-list-item .task-actions {
+    display: flex;
+    gap: 5px;
+}
+.task-list-item .btn-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #999;
+}
+.task-list-item .btn-delete:hover {
+    color: #d33;
+}
+#add-list-item-btn {
+    margin: 0 20px 20px;
+    padding: 8px 16px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#add-list-item-btn:hover {
+    background: #45a049;
+}
+/* Стиль фона модального окна (затемнение) */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный чёрный */
+  z-index: 1000; /* Поверх всех элементов */
+  justify-content: center;
+  align-items: center;
+}
+
+/* Стиль контейнера модального окна */
+/* Фон модального окна (на весь экран + затемнение) */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  width: 400px;
+  max-width: 90%;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Центрируем все элементы по горизонтали */
+}
+
+.modal-content h3 {
+  text-align: center;
+  margin: 0 0 15px 0;
+  width: 100%; /* Занимает всю ширину контейнера */
+}
+
+#card-text-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+#save-card-btn {
+  width: fit-content;
+  min-width: unset;
+  padding: 6px 12px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  margin: 0;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+#save-card-btn:hover {
+  background: #218838;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
 }
